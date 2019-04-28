@@ -95,7 +95,45 @@ if (response.smodal) {
     $(this).smodal(response.smodal);
 }
 ```
+##### Abrindo uma modal existente no documento
 
+```
+Adicionar a modal ao documento 
+
+Ex.:
+<div class="app_modal nomeparamodal" s-modalclose="true">
+    <div class="app_modal_box">
+        <span><a class="app_modal_close rounded" s-modalclose="true" href="#">x</a></span>
+        Conteudo da Modal
+    </div>
+</div>
+
+Adicionar ao elemento que vai abrir a modal existente no documento
+
+s-modal="nomeparamodal"
+
+Monitoramento do objeto que vai ser clicado
+
+$("[s-modal]").on('click', function (e) {
+        e.preventDefault();
+
+        $(this).smodal({
+            'modalname' : $(this).attr('s-modalname'),
+            'modalhtml' : $(this).attr('s-modalhtml'),
+            'modaltype' : $(this).attr('s-modaltype'),
+            'modalwidth' : $(this).attr('s-modalwidth'),
+            'sadddata' : $(this).attr('s-adddata'),
+            'sremovedata' : $(this).attr('s-removedata'),
+            'saddattr' : $(this).attr('s-addattr'),
+            'sremoveattr' : $(this).attr('s-removeattr'),
+            'saddhtml' : $(this).attr('s-addhtml'),
+            'saddclass' : $(this).attr('s-addclass'),
+            'sremoveclass' : $(this).attr('s-removeclass'),
+            'sremoveelement' : $(this).attr('s-removeelement'),
+            'modaldata' : $(this).data()
+        });
+    });   
+```
 
 
 
