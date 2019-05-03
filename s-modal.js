@@ -2,403 +2,304 @@
  * Author: Robson Suzin
  * Using jQuery
  *
- * Criação do HTML tem por obrigação ter um .app_modal
+ * modalname = Nome para a modal
+ * modaltype = Ex.: info delete delete_photo ( Atribui os estilos padrões da modal )
+ * modalhtml = Ex.: Conteúdo HTML da Modal
+ * modalwidth = Qual será o tamanho da modal - Padrão 500px
  *
- * Inicializa a ação no botão
+ * modaldata = Data() que estavam armazenados no objeto do evento
+ * modaldatainsert = Qual objeto vai receber os data()
  *
- * s-modal = Ex.: dialog::true ( dialog utiliza o html padrão) ou Ex.: modal::class | utilizar o modal para abrir uma modal especifica
- * s-modalhtml = Ex.: true (Mostra para o sistema que vai ser inserido um novo html)
- * s-modalwidth = Qual será o tamanho da modal - Padrão 500px
- * s-adddata = Adiciona Data Ex.: elemento::data==valor|elemento::data==valor
- * s-removedata = Remover Data Ex.: elemento::data|elemento::data
- * s-addattr = Adiciona Atributos Ex.: elemento::attr==valor|elemento::attr==valor
- * s-removeattr = Remover Atributos Ex.: elemento::attr==valor|elemento::attr==valor
- * s-addhtml = Adiciona Html Ex.: elemento::valor|elemento::valor
- * s-addclass = Adicionar Class Ex.: elemento::class|elemento::class
- * s-removeclass = Remove Class Ex.: elemento::class|elemento::class
- *
- * data-action = Ex.: delete ou info (utiliza o html pré-definido)
+ * sadddata = Adiciona Data Ex.: elemento::data==valor|elemento::data==valor
+ * sremovedata = Remover Data Ex.: elemento::data|elemento::data
+ * saddattr = Adiciona Atributos Ex.: elemento::attr==valor|elemento::attr==valor
+ * sremoveattr = Remover Atributos Ex.: elemento::attr==valor|elemento::attr==valor
+ * saddhtml = Adiciona Html Ex.: elemento::valor|elemento::valor
+ * saddclass = Adicionar Class Ex.: elemento::class|elemento::class
+ * sremoveclass = Remove Class Ex.: elemento::class|elemento::class
+ * sremoveelement = Remove Class Ex.: elemento|elemento
  *
  */
-function Modal() {
+(function ($) {
+    $.fn.smodal = function (options) {
 
-    thisClass = this;
-    thisElement = null;
-    objattr = null;
-    effecttime = 200;
+        thisClass = this;
 
-    html = '';
-    btndata = ''; // Se for necessário passar os parametros data do botão clicado para algum botão na modal
+        effecttime = 200;
 
-    data = '';
-
-    saddhtml = '';
-    sadddata = '';
-    sremovedata = '';
-    saddattr = '';
-    sremoveattr = '';
-    saddclass = '';
-    sremoveclass = '';
-    sremoveelement = '';
-    shtml = '';
-    smodal = '';
-
-    //Initialize modal
-    this.initialize = function () {
-
-
-        if (thisElement) {
-            saddhtml = thisElement.attr('s-addhtml');
-            sadddata = thisElement.attr('s-adddata');
-            sremovedata = thisElement.attr('s-removedata');
-            saddattr = thisElement.attr('s-addattr');
-            sremoveattr = thisElement.attr('s-removeattr');
-            saddclass = thisElement.attr('s-addclass');
-            sremoveclass = thisElement.attr('s-removeclass');
-            sremoveelement = thisElement.attr('s-removeelement');
-            shtml = thisElement.attr('s-html');
-
-            smodal = thisClass.objSplit(thisElement.attr('s-modal'));
+        if (options.modalhtml) {
+            defaulthtml = '<div class="app_modal ' + (options.modalname ? options.modalname : 'app_modal_dialog') + '" s-modalclose="true">' +
+                '<div class="app_modal_box">' + options.modalhtml + '</div></div>';
         } else {
-
-            $.each(objattr, function (key, value) {
-                if (key === 'action') {
-                    data.action = value;
-                }
-
-                if (key === 'saddhtml') {
-                    saddhtml = value;
-                }
-                if (key === 'sadddata') {
-                    sadddata = value;
-                }
-                if (key === 'sremovedata') {
-                    sremovedata = value;
-                }
-                if (key === 'saddattr') {
-                    saddattr = value;
-                }
-                if (key === 'sremoveattr') {
-                    sremoveattr = value;
-                }
-                if (key === 'saddclass') {
-                    saddclass = value;
-                }
-                if (key === 'sremoveclass') {
-                    sremoveclass = value;
-                }
-                if (key === 'sremoveelement') {
-                    sremoveelement = value;
-                }
-                if (key === 'shtml') {
-                    shtml = value;
-                }
-                if (key === 'smodal') {
-                    smodal = thisClass.objSplit(value);
-                }
-            });
-        }
-
-        if (smodal[0] === 'dialog' && smodal[1] === 'true') {
-            modalclass = 'app_modal_dialog';
-        } else {
-            modalclass = smodal[1];
-        }
-
-        if (smodal[0] === 'modal') {
-            modalclass = smodal[1];
-        }
-
-        if (!html) {
-            html = '<div class="app_modal ' + modalclass + '" data-modalclose="true">' +
+            defaulthtml = '<div class="app_modal ' + (options.modalname ? options.modalname : 'app_modal_dialog') + '" s-modalclose="true">' +
                 '<div class="app_modal_box">' +
-                '<span><a class="app_modal_close rounded" data-modalclose="true" href="#">x</a></span>' +
+                '<span><a class="app_modal_close rounded icon-times icon-notext transition" s-modalclose="true" href="#"></a></span>' +
                 '<p class="js-icon icon-notext al-center"></p>' +
                 '<p class="js-title title"></p>' +
                 '<div class="flex" >' +
-                '<a class="js-cancel btn btn-normal radius transition" data-modalclose="true" href="#">' +
+                '<a class="js-cancel btn btn-normal radius transition" s-modalclose="true" href="#">' +
                 'Cancelar' +
                 '</a>' +
-                '<a class="js-confirm btn btn-normal radius transition" data-modalclose="true" href="#" >' +
+                '<a class="js-confirm btn btn-normal radius transition" s-modalclose="true" href="#" >' +
                 'Confirmar' +
-                '</a>' +
-                '</div>' +
-                '</div>' +
-                '</div>';
+                '</a></div></div></div>';
         }
 
-        if (smodal[0] === 'modal') {
-            if ($('.' + smodal[1]).length > 0 && smodal[1] === true) {
-                $('.' + smodal[1]).remove();
-            }
-            if ($('.' + smodal[1]).length === 0 && smodal[1] !== true) {
-                $('body').prepend(html);
-            }
+        defaults = {
+            'modalname': 'app_modal_dialog',
+            'modaltype': '',
+            'modalhtml': defaulthtml,
+            'modalwidth': 500,
+            'modaldatainsert': 'js-confirm'
+        };
 
-            if (smodal[1] === 'true') {
-                appmodal = $('.app_modal_dialog');
-            } else {
-                appmodal = $('.' + smodal[1]);
-            }
+        settings = $.extend({}, defaults, options);
+
+        if (typeof modalname === 'undefined') {
+            modalname = [];
+            modalname.unshift({name: settings.modalname});
         } else {
-            if (smodal[1] === 'true') {
-                appmodal = $('.app_modal_dialog');
-                appmodal.remove();
-                $('body').prepend(html);
-                appmodal = $('.app_modal_dialog');
-
+            if (modalname.length === 0) {
+                modalname.unshift({name: settings.modalname});
             } else {
-                appmodal = $('.' + smodal[1]);
-
+                $.each(modalname, function (key, value) {
+                    if (value['name'] !== settings.modalname) {
+                        modalname.unshift({name: settings.modalname});
+                    }
+                });
             }
+
         }
 
-        if (btndata && data) {
-            thisClass.adddata($('.' + btndata), data);
-        }
+        this.addhtml = function (e, obj) {
+            $.each(obj, function (key, value) {
+                e.html(value);
+            });
+        };
 
+        this.adddata = function (e, obj) {
+            $.each(obj, function (key, value) {
+                if (key.indexOf("-") === -1) {
+                    key = 'data-' + key;
+                }
+                e.attr(key, value);
+            });
+        };
 
-        if (data.action === 'info') {
-            thisClass.setInfo();
-        }
+        this.removedata = function (e, obj) {
+            $.each(obj, function (key, value) {
+                if (key.indexOf("-") === -1) {
+                    value = 'data-' + value;
+                }
+                e.removeAttr(value);
+            });
+        };
 
-        if (data.action === 'delete' || data.action === 'delete_photo') {
-            thisClass.setDelete();
-        }
+        this.addattr = function (e, obj) {
+            $.each(obj, function (key, value) {
+                e.attr(key, value);
+            });
+        };
 
-        if (data.modalwidth) {
-            thisClass.setWidth(data.modalwidth);
-        } else {
-            thisClass.setWidth(500);
-        }
+        this.removeattr = function (e, obj) {
+            $.each(obj, function (key, value) {
+                e.removeAttr(value);
+            });
+        };
 
-        if (saddhtml) {
-            thisClass.setProperties(saddhtml, 'addhtml');
-        }
+        this.addclass = function (e, obj) {
+            $.each(obj, function (key, value) {
+                e.addClass(value);
+            });
+        };
 
-        if (sadddata) {
-            thisClass.setProperties(sadddata, 'adddata');
-        }
-        if (sremovedata) {
-            thisClass.setProperties(sremovedata, 'removedata');
-        }
-        if (saddattr) {
-            thisClass.setProperties(saddattr, 'addattr');
-        }
-        if (sremoveattr) {
-            thisClass.setProperties(sremoveattr, 'removeattr');
-        }
-        if (saddclass) {
-            thisClass.setProperties(saddclass, 'addclass');
-        }
-        if (sremoveclass) {
-            thisClass.setProperties(sremoveclass, 'removeclass');
-        }
-        if (sremoveelement) {
-            thisClass.setProperties(sremoveelement, 'removeelement');
-        }
+        this.removeclass = function (e, obj) {
+            $.each(obj, function (key, value) {
+                e.removeClass(value);
+            });
+        };
 
-        thisClass.open();
-
-        $("[data-modalclose]").on('click', function (e) {
-            if (e.target === this) {
-                thisClass.close();
-            }
-        });
-    };
-
-    this.setInfo = function () {
-
-        if (!sremoveattr) {
-            sremoveattr = 'js-confirm::data-post';
-        }
-
-        if (!saddhtml) {
-            saddhtml = 'js-confirm::Editar|js-cancel::OK';
-        }
-
-        if (!saddclass) {
-            saddclass = 'js-confirm::btn-blue|js-confirm::icon-pencil|js-cancel::btn-green|js-cancel::icon-check|js-icon::color-blue|js-icon::icon-info';
-        }
-
-    };
-
-    this.setDelete = function () {
-
-        if (!saddhtml) {
-            saddhtml = 'js-confirm::Apagar|js-cancel::Cancelar';
-        }
-
-        if (!saddclass) {
-            saddclass = 'js-confirm::btn-red|js-confirm::icon-trash|js-cancel::btn-default|js-cancel::icon-ban|js-icon::color-yellow|js-icon::icon-warning';
-        }
-    };
-
-    this.addhtml = function (e, obj) {
-        $.each(obj, function (key, value) {
-            e.html(value);
-        });
-    };
-
-    this.adddata = function (e, obj) {
-        $.each(obj, function (key, value) {
-            if (key.indexOf("-") === -1) {
-                key = 'data-' + key;
-            }
-            e.attr(key, value);
-
-        });
-    };
-
-    this.removedata = function (e, obj) {
-        $.each(obj, function (key, value) {
-            if (key.indexOf("-") === -1) {
-                value = 'data-' + value;
-            }
-            e.removeAttr(value);
-        });
-    };
-
-    this.addattr = function (e, obj) {
-        $.each(obj, function (key, value) {
-            e.attr(key, value);
-        });
-    };
-
-    this.removeattr = function (e, obj) {
-        $.each(obj, function (key, value) {
-            e.removeAttr(value);
-        });
-    };
-
-    this.addclass = function (e, obj) {
-        $.each(obj, function (key, value) {
-            e.addClass(value);
-        });
-    };
-
-    this.removeclass = function (e, obj) {
-        $.each(obj, function (key, value) {
-            e.removeClass(value);
-        });
-    };
-
-    this.removeelement = function (e, obj) {
+        this.removeelement = function (e) {
             e.remove();
-    };
+        };
 
-    this.setProperties = function (s, f) {
-        if (!s) {
-            return;
-        }
+        this.addcss = function (e, obj) {
+            $.each(obj, function (key, value) {
+                obj[key] = value;
+                e.css(obj);
+            });
+        };
 
-        s = s.split('|');
+        this.setInfo = function () {
+            defaultremoveattr = 'js-confirm::data-post';
+            thisClass.setProperties(defaultremoveattr, 'removeattr');
 
-        $.each(s, function (key, value) {
-            obj = value.split('::');
+            defaultaddhtml = 'js-confirm::Editar|js-cancel::OK';
+            thisClass.setProperties(defaultaddhtml, 'addhtml');
 
-            element = $('.' + obj[0]);
-            elementObj = thisClass.objSplit(obj[1]);
+            defaultaddclass = 'js-confirm::btn-blue|js-confirm::icon-pencil|js-cancel::btn-green|js-cancel::icon-check|js-icon::color-blue|js-icon::icon-info';
+            thisClass.setProperties(defaultaddclass, 'addclass');
+        };
 
-            switch (f) {
-                case "adddata":
-                    thisClass.adddata(element, elementObj);
-                    break;
-                case "removedata":
-                    thisClass.removedata(element, elementObj);
-                    break;
-                case "addclass":
-                    thisClass.addclass(element, elementObj);
-                    break;
-                case "removeclass":
-                    thisClass.removeclass(element, elementObj);
-                    break;
-                case "addattr":
-                    thisClass.addattr(element, elementObj);
-                    break;
-                case "removeattr":
-                    thisClass.removeattr(element, elementObj);
-                    break;
-                case "removeelement":
-                    thisClass.removeelement(element, elementObj);
-                    break;
-                case "addhtml":
-                    thisClass.addhtml(element, elementObj);
-                    break;
+        this.setDelete = function () {
+            defaultaddhtml = 'js-confirm::Apagar|js-cancel::Cancelar';
+            thisClass.setProperties(defaultaddhtml, 'addhtml');
 
+            defaultaddclass = 'js-confirm::btn-red|js-confirm::icon-trash|js-cancel::btn-default|js-cancel::icon-ban|js-icon::color-yellow|js-icon::icon-warning';
+            thisClass.setProperties(defaultaddclass, 'addclass');
+        };
+
+        this.setProperties = function (s, f) {
+            if (!s) {
+                return;
             }
 
-        });
-    };
+            s = s.split('|');
 
-    this.objSplit = function (v, c = '::') {
+            $.each(s, function (key, value) {
+                obj = value.split('::');
 
-        if (!v) {
-            return;
-        }
-        s = v.split(c);
+                element = $('.' + obj[0]);
+                elementObj = thisClass.objSplit(obj[1]);
 
-        split_value = null;
-        s_obj = Object();
-        $.each(s, function (key, value) {
-            split_value = value.split('==');
-            if (split_value[1]) {
-                s_obj[split_value[0]] = split_value[1];
-            } else {
-                s_obj[key] = split_value[0];
+                switch (f) {
+                    case "adddata":
+                        thisClass.adddata(element, elementObj);
+                        break;
+                    case "removedata":
+                        thisClass.removedata(element, elementObj);
+                        break;
+                    case "addclass":
+                        thisClass.addclass(element, elementObj);
+                        break;
+                    case "removeclass":
+                        thisClass.removeclass(element, elementObj);
+                        break;
+                    case "addattr":
+                        thisClass.addattr(element, elementObj);
+                        break;
+                    case "removeattr":
+                        thisClass.removeattr(element, elementObj);
+                        break;
+                    case "removeelement":
+                        thisClass.removeelement(element, elementObj);
+                        break;
+                    case "addhtml":
+                        thisClass.addhtml(element, elementObj);
+                        break;
+                    case "addcss":
+                        thisClass.addcss(element, elementObj);
+                        break;
+                }
+            });
+        };
+
+        this.objSplit = function (v, c = '::') {
+
+            if (!v) {
+                return;
             }
-        });
+            s = v.split(c);
 
-        return s_obj;
-    };
+            split_value = null;
+            s_obj = Object();
+            $.each(s, function (key, value) {
+                split_value = value.split('==');
+                if (split_value[1]) {
+                    s_obj[split_value[0]] = split_value[1];
+                } else {
+                    s_obj[key] = split_value[0];
+                }
+            });
 
-    this.setWidth = function (value) {
-        if (!value) {
-            datamodalwidth = 500
-        } else {
-            datamodalwidth = value;
-        }
-    };
+            return s_obj;
+        };
 
-    this.sethtml = function (value) {
-        html = value;
-    };
+        this.show = function () {
 
-    this.setbtndata = function (value) {
-        btndata = value;
-    };
+            objmodalname = $('.' + modalname[0]['name']);
 
-    this.setbtnclicked = function (element) {
-        thisElement = element;
-        data = thisElement.data();
-    };
+            box = objmodalname.children();
 
-    this.setobjattr = function (obj) {
-        objattr = obj;
-    };
+            objmodalname.fadeIn(effecttime).css("display", "flex");
 
-//Open
-    this.open = function () {
+            box.css('width', '0');
+            box.animate({"width": (settings.modalwidth + 20) + "px"}, effecttime);
+            box.animate({"width": (settings.modalwidth) + "px"}, effecttime - 150);
+        };
 
-        thisClass.setWidth(data.modalwidth);
+        this.close = function () {
+            $("[s-modalclose]").click(function (e) {
+                if (e.target === this) {
 
-        box = appmodal.children();
-        appmodal.fadeIn(effecttime).css("display", "flex");
-        box.css('width', '0px');
-        box.animate({"width": (datamodalwidth + 20) + "px"}, effecttime);
-        box.animate({"width": (datamodalwidth) + "px"}, effecttime - 150);
-    };
+                    objmodalname = $('.' + modalname[0]['name']);
+                    box = objmodalname.children();
+                    box.animate({"width": "250px"}, effecttime);
+                    objmodalname.fadeOut(effecttime, function () {
 
-//Close
-    this.close = function () {
-        box = appmodal.children();
-        box.animate({"width": "250px"}, effecttime);
-        appmodal.fadeOut(effecttime, function () {
-            if (box.length === 1) {
-                appmodal.remove();
+                        if (box.length === 1 && (modalname[0]['name'] === 'app_modal_dialog' || options.modalhtml)) {
+                            objmodalname.remove();
+                            modalname.splice(0, 1);
+                        }
+                    });
+
+                }
+            });
+        };
+
+
+        return this.each(function () {
+
+            if (settings.modalname === 'app_modal_dialog' || options.modalhtml) {
+                $('body').prepend(defaulthtml);
             }
+
+            if (settings.modaltype) {
+                if (settings.modaltype === 'info') {
+                    thisClass.setInfo();
+                }
+
+                if (settings.modaltype === 'delete' || settings.modaltype === 'delete_photo') {
+                    thisClass.setDelete();
+                }
+            }
+
+            if (settings.saddhtml) {
+                thisClass.setProperties(settings.saddhtml, 'addhtml');
+            }
+            if (settings.sadddata) {
+                thisClass.setProperties(settings.sadddata, 'adddata');
+            }
+            if (settings.sremovedata) {
+                thisClass.setProperties(settings.sremovedata, 'removedata');
+            }
+            if (settings.saddattr) {
+                thisClass.setProperties(settings.saddattr, 'addattr');
+            }
+            if (settings.sremoveattr) {
+                thisClass.setProperties(settings.sremoveattr, 'removeattr');
+            }
+            if (settings.saddclass) {
+                thisClass.setProperties(settings.saddclass, 'addclass');
+            }
+            if (settings.sremoveclass) {
+                thisClass.setProperties(settings.sremoveclass, 'removeclass');
+            }
+            if (settings.sremoveelement) {
+                thisClass.setProperties(settings.sremoveelement, 'removeelement');
+            }
+            if (settings.saddcss) {
+                thisClass.setProperties(settings.saddcss, 'addcss');
+            }
+            if (settings.modaldata) {
+                thisClass.adddata($('.' + settings.modaldatainsert), settings.modaldata);
+            }
+
+            thisClass.show();
+            thisClass.close();
+
         });
-    };
 
 
-}
+    }
+})(jQuery);
