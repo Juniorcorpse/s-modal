@@ -39,13 +39,13 @@
         effecttime = 200;
 
         if (options.smodalname === 'app_modal_dialog') {
-            options.smodalhtml = '<div class="d-flex justify-content-center"><div class="js-icon icon-notext "></div></div>' +
+            options.smodalhtml = '<div class="d-flex justify-content-center"><div class="js-icon icon-notext display-1"></div></div>' +
                 '<h3 class="js-title pb-3 text-center"></h3>' +
                 '<div class="ds-flex text-center" >' +
                 '<a class="js-cancel btn btn-info rounded" smodalclose="true" href="#">' +
                 'Cancelar' +
                 '</a>' +
-                '<a class="js-confirm btn btn-danger rounded" smodalclose="true" href="#" >' +
+                '<a class="js-confirm btn btn-danger rounded ml-1" smodalclose="true" href="#" >' +
                 'Confirmar' +
                 '</a></div>';
         }
@@ -63,7 +63,7 @@
         defaulthtml = '<div class="app_modal position-fixed pt-3 pb-3 ' + (options.smodalname ? options.smodalname : 'app_modal_dialog') + '" s-modalclose="true" ' +
             'style="left: 0; top: 0;right: 0;bottom: 0; background: rgba(100, 100, 100, 0.5); z-index: 999;">' +
             '<div class="app_modal_box position-relative m-auto bg-white p-3 rounded shadow" style="max-width: 94% !important;">' +
-            '<div><a class="app_modal_close position-absolute font-weight-bold p-2 rounded text-danger icon-times icon-notext" ' +
+            '<div><a class="app_modal_close position-absolute font-weight-bold p-2 mr-2 rounded text-danger icon-times icon-notext" ' +
             'smodalclose="true" ' +
             'style="top: 5px; right: 0;"' +
             'href="#"' +
