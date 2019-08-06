@@ -1,18 +1,21 @@
 # Plugin jQuery s-modal
 *Author: Robson Suzin*
 Using jQuery
+CSS: Bootstrap
 
 
 ```
 Dados para serem enviados no objeto:
 
-modalname = Nome para a modal
-modaltype = Ex.: info | delete | delete_photo ( Atribui os estilos padrões da modal )
-modalhtml = Ex.: Conteúdo HTML da Modal
-modalwidth = Qual será o tamanho da modal - Padrão 500px
+smodalname = app_modal_dialog (Abre uma modal dialog) | Outro nome adiciona conteudo html
+smodaltype = Ex.: info delete delete_photo ( Atribui os estilos padrões da modal )
+smodalhtml = Ex.: Conteúdo HTML da Modal
+smodalwidth = Qual será o tamanho da modal - Padrão 500px - Ex: 90%
+smodalprint = true (Adiciona um botão de print)
 
-modaldata = Data() que estavam armazenados no objeto do evento
-modaldatainsert = Qual objeto vai receber os data()
+smodaleffect = Qual efeito que vai aparecer a modal, jqueryUi
+
+smodaldata = Qual objeto vai receber os data() do evento
 
 sadddata = Adiciona Data 
 Ex.: elemento::data==valor|elemento::data==valor
@@ -37,6 +40,10 @@ Ex.: elemento::class|elemento::class
 
 sremoveelement = Remove Class 
 Ex.: elemento|elemento
+
+saddcss = Adiciona um css ao elemento
+Ex.: elemento::css==valor
+
 ```
 #### Exemplos de utilização 
 ##### Abrindo uma modal pela ação de um botão
@@ -44,35 +51,21 @@ Ex.: elemento|elemento
 ```
 Botão que vai receber o click
 
-<a class="icon-trash-o btn btn-small btn-red" href="#" title="Deletar Departamento?"
-s-modal="true"
-s-modaltype="delete"
-s-adddata="class::data-id==conteudo"
-s-addhtml="js-title::Atenção: Tem certeza que deseja excluir esse departamento! Essa Ação não pode ser desfeita!"
+<a class="icon-trash-o btn btn-danger" href="#" title="Deletar?"
+smodalname="app_modal_dialog"
+smodaltype="delete"
+smodaldata="js-confirm"
+saddhtml="js-title::Atenção: Tem certeza que deseja excluir esse departamento! Essa Ação não pode ser desfeita!"
 data-id="conteudo"
 >Deletar</a>
 
 Script que monitora o botão:
 
-$("[s-modal]").on('click', function (e) {
-        e.preventDefault();
+$(document).on('click', "[smodalname]", function (e) {
+    e.preventDefault();
+    $(this).smodal();
+});    
 
-        $(this).smodal({
-            'modalname' : $(this).attr('s-modalname'),
-            'modalhtml' : $(this).attr('s-modalhtml'),
-            'modaltype' : $(this).attr('s-modaltype'),
-            'modalwidth' : $(this).attr('s-modalwidth'),
-            'sadddata' : $(this).attr('s-adddata'),
-            'sremovedata' : $(this).attr('s-removedata'),
-            'saddattr' : $(this).attr('s-addattr'),
-            'sremoveattr' : $(this).attr('s-removeattr'),
-            'saddhtml' : $(this).attr('s-addhtml'),
-            'saddclass' : $(this).attr('s-addclass'),
-            'sremoveclass' : $(this).attr('s-removeclass'),
-            'sremoveelement' : $(this).attr('s-removeelement'),
-            'modaldata' : $(this).data()
-        });
-    });    
 ```
 ##### Abrindo modal pelo callback do ajax
 
@@ -80,7 +73,7 @@ $("[s-modal]").on('click', function (e) {
 Objeto para ser enviado ao callback
 
 $data = new \stdClass();
-$data->modaltype = "info";
+$data->smodaltype = "info";
 $data->saddhtml = 'class::conteudo';
 $data->saddclass = 'class::conteudo|class::conteudo';
 $data->saddattr = 'class::atributo==conteudo';
@@ -94,46 +87,3 @@ Monitoramento do callback
 if (response.smodal) {
     $(this).smodal(response.smodal);
 }
-```
-##### Abrindo uma modal existente no documento
-
-```
-Adicionar a modal ao documento 
-
-Ex.:
-<div class="app_modal nomeparamodal" s-modalclose="true">
-    <div class="app_modal_box">
-        <span><a class="app_modal_close rounded" s-modalclose="true" href="#">x</a></span>
-        Conteudo da Modal
-    </div>
-</div>
-
-Adicionar ao elemento que vai abrir a modal existente no documento
-
-s-modal="nomeparamodal"
-
-Monitoramento do objeto que vai ser clicado
-
-$("[s-modal]").on('click', function (e) {
-        e.preventDefault();
-
-        $(this).smodal({
-            'modalname' : $(this).attr('s-modalname'),
-            'modalhtml' : $(this).attr('s-modalhtml'),
-            'modaltype' : $(this).attr('s-modaltype'),
-            'modalwidth' : $(this).attr('s-modalwidth'),
-            'sadddata' : $(this).attr('s-adddata'),
-            'sremovedata' : $(this).attr('s-removedata'),
-            'saddattr' : $(this).attr('s-addattr'),
-            'sremoveattr' : $(this).attr('s-removeattr'),
-            'saddhtml' : $(this).attr('s-addhtml'),
-            'saddclass' : $(this).attr('s-addclass'),
-            'sremoveclass' : $(this).attr('s-removeclass'),
-            'sremoveelement' : $(this).attr('s-removeelement'),
-            'modaldata' : $(this).data()
-        });
-    });   
-```
-
-
-
