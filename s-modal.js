@@ -1,83 +1,105 @@
 /* ### Modal Class ###
- * Author: Robson Suzin
- * Using jQuery
- *
- * modalname = Nome para a modal
- * modaltype = Ex.: info delete delete_photo ( Atribui os estilos padrões da modal )
- * modalhtml = Ex.: Conteúdo HTML da Modal
- * modalwidth = Qual será o tamanho da modal - Padrão 500px
- *
- * modaldata = Data() que estavam armazenados no objeto do evento
- * modaldatainsert = Qual objeto vai receber os data()
- *
- * sadddata = Adiciona Data Ex.: elemento::data==valor|elemento::data==valor
- * sremovedata = Remover Data Ex.: elemento::data|elemento::data
- * saddattr = Adiciona Atributos Ex.: elemento::attr==valor|elemento::attr==valor
- * sremoveattr = Remover Atributos Ex.: elemento::attr==valor|elemento::attr==valor
- * saddhtml = Adiciona Html Ex.: elemento::valor|elemento::valor
- * saddclass = Adicionar Class Ex.: elemento::class|elemento::class
- * sremoveclass = Remove Class Ex.: elemento::class|elemento::class
- * sremoveelement = Remove Class Ex.: elemento|elemento
- *
- */
+* Author: Robson Suzin
+* Using jQuery
+*
+* smodalname = app_modal_dialog (Abre uma modal dialog) | Outro nome adiciona conteudo html
+* smodaltype = Ex.: info delete delete_photo ( Atribui os estilos padrões da modal )
+* smodalhtml = Ex.: Conteúdo HTML da Modal
+* smodalwidth = Qual será o tamanho da modal - Padrão 500px - Ex: 90%
+* smodalprint = true (Adiciona um botão de print)
+*
+* smodaleffect = Qual efeito que vai aparecer a modal, jqueryUi
+*
+* smodaldata = Qual objeto vai receber os data() do evento
+*
+* sadddata = Adiciona Data Ex.: elemento::data==valor|elemento::data==valor
+* sremovedata = Remover Data Ex.: elemento::data|elemento::data
+* saddattr = Adiciona Atributos Ex.: elemento::attr==valor|elemento::attr==valor
+* sremoveattr = Remover Atributos Ex.: elemento::attr==valor|elemento::attr==valor
+* saddhtml = Adiciona Html Ex.: elemento::valor|elemento::valor
+* saddclass = Adicionar Class Ex.: elemento::class|elemento::class
+* sremoveclass = Remove Class Ex.: elemento::class|elemento::class
+* sremoveelement = Remove Class Ex.: elemento|elemento
+* saddcss = Adiciona um css ao elemento Ex.: elemento::css==valor
+*/
 (function ($) {
     $.fn.smodal = function (options) {
+
+        if(!options) {
+            options = [];
+            $(this).each(function() {
+                $.each(this.attributes, function() {
+                    options[this.name]=this.value;
+                });
+            });
+        }
 
         thisClass = this;
 
         effecttime = 200;
 
-        if (options.modalhtml) {
-            defaulthtml = '<div class="app_modal ' + (options.modalname ? options.modalname : 'app_modal_dialog') + '" s-modalclose="true">' +
-                '<div class="app_modal_box">' + options.modalhtml + '</div></div>';
-        } else {
-            defaulthtml = '<div class="app_modal ' + (options.modalname ? options.modalname : 'app_modal_dialog') + '" s-modalclose="true">' +
-                '<div class="app_modal_box">' +
-                '<span><a class="app_modal_close rounded icon-times icon-notext transition" s-modalclose="true" href="#"></a></span>' +
-                '<p class="js-icon icon-notext al-center"></p>' +
-                '<p class="js-title title"></p>' +
-                '<div class="flex" >' +
-                '<a class="js-cancel btn btn-normal radius transition" s-modalclose="true" href="#">' +
+        if (options.smodalname === 'app_modal_dialog') {
+            options.smodalhtml = '<div class="d-flex justify-content-center"><div class="js-icon icon-notext "></div></div>' +
+                '<h3 class="js-title pb-3 text-center"></h3>' +
+                '<div class="ds-flex text-center" >' +
+                '<a class="js-cancel btn btn-info rounded" smodalclose="true" href="#">' +
                 'Cancelar' +
                 '</a>' +
-                '<a class="js-confirm btn btn-normal radius transition" s-modalclose="true" href="#" >' +
+                '<a class="js-confirm btn btn-danger rounded" smodalclose="true" href="#" >' +
                 'Confirmar' +
-                '</a></div></div></div>';
+                '</a></div>';
         }
 
+        if (options.smodalprint === true) {
+            options.smodalprint = '<a class="position-absolute font-weight-bold p-2 rounded text-dark ' +
+                'icon-notext icon-print" href="#" onClick="window.print();"' +
+                'style="top: 5px; right: 40px;" ' +
+                '></a>';
+        } else {
+            options.smodalprint = '';
+        }
+
+
+        defaulthtml = '<div class="app_modal position-fixed pt-3 pb-3 ' + (options.smodalname ? options.smodalname : 'app_modal_dialog') + '" s-modalclose="true" ' +
+            'style="left: 0; top: 0;right: 0;bottom: 0; background: rgba(100, 100, 100, 0.5); z-index: 999;">' +
+            '<div class="app_modal_box position-relative m-auto bg-white p-3 rounded shadow" style="max-width: 94% !important;">' +
+            '<div><a class="app_modal_close position-absolute font-weight-bold p-2 rounded text-danger icon-times icon-notext" ' +
+            'smodalclose="true" ' +
+            'style="top: 5px; right: 0;"' +
+            'href="#"' +
+            '></a> ' + options.smodalprint + ' </div> ' + options.smodalhtml + '</div></div>';
+
         defaults = {
-            'modalname': 'app_modal_dialog',
-            'modaltype': '',
-            'modalhtml': defaulthtml,
-            'modalwidth': 500,
-            'modaldatainsert': 'js-confirm'
+            'smodalhtml': defaulthtml,
+            'smodalwidth': 500,
+            'smodaldata': 'js-confirm'
         };
 
         settings = $.extend({}, defaults, options);
 
-        if (typeof modalname === 'undefined') {
-            modalname = [];
-            modalname.unshift({name: settings.modalname});
+        if (typeof smodalname === 'undefined') {
+            smodalname = [];
+            smodalname.unshift({name: settings.smodalname});
         } else {
-            if (modalname.length === 0) {
-                modalname.unshift({name: settings.modalname});
+            if (smodalname.length === 0) {
+                smodalname.unshift({name: settings.smodalname});
             } else {
-                $.each(modalname, function (key, value) {
-                    if (value['name'] !== settings.modalname) {
-                        modalname.unshift({name: settings.modalname});
+                $.each(smodalname, function (key, value) {
+                    if (value['name'] !== settings.smodalname) {
+                        smodalname.unshift({name: settings.smodalname});
                     }
                 });
             }
 
         }
 
-        this.addhtml = function (e, obj) {
+        this.saddhtml = function (e, obj) {
             $.each(obj, function (key, value) {
                 e.html(value);
             });
         };
 
-        this.adddata = function (e, obj) {
+        this.sadddata = function (e, obj) {
             $.each(obj, function (key, value) {
                 if (key.indexOf("-") === -1) {
                     key = 'data-' + key;
@@ -86,7 +108,7 @@
             });
         };
 
-        this.removedata = function (e, obj) {
+        this.sremovedata = function (e, obj) {
             $.each(obj, function (key, value) {
                 if (key.indexOf("-") === -1) {
                     value = 'data-' + value;
@@ -95,35 +117,35 @@
             });
         };
 
-        this.addattr = function (e, obj) {
+        this.saddattr = function (e, obj) {
             $.each(obj, function (key, value) {
                 e.attr(key, value);
             });
         };
 
-        this.removeattr = function (e, obj) {
+        this.sremoveattr = function (e, obj) {
             $.each(obj, function (key, value) {
                 e.removeAttr(value);
             });
         };
 
-        this.addclass = function (e, obj) {
+        this.saddclass = function (e, obj) {
             $.each(obj, function (key, value) {
                 e.addClass(value);
             });
         };
 
-        this.removeclass = function (e, obj) {
+        this.sremoveclass = function (e, obj) {
             $.each(obj, function (key, value) {
                 e.removeClass(value);
             });
         };
 
-        this.removeelement = function (e) {
+        this.sremoveelement = function (e) {
             e.remove();
         };
 
-        this.addcss = function (e, obj) {
+        this.saddcss = function (e, obj) {
             $.each(obj, function (key, value) {
                 obj[key] = value;
                 e.css(obj);
@@ -132,21 +154,21 @@
 
         this.setInfo = function () {
             defaultremoveattr = 'js-confirm::data-post';
-            thisClass.setProperties(defaultremoveattr, 'removeattr');
+            thisClass.setProperties(defaultremoveattr, 'sremoveattr');
 
             defaultaddhtml = 'js-confirm::Editar|js-cancel::OK';
-            thisClass.setProperties(defaultaddhtml, 'addhtml');
+            thisClass.setProperties(defaultaddhtml, 'saddhtml');
 
-            defaultaddclass = 'js-confirm::btn-blue|js-confirm::icon-pencil|js-cancel::btn-green|js-cancel::icon-check|js-icon::color-blue|js-icon::icon-info';
-            thisClass.setProperties(defaultaddclass, 'addclass');
+            defaultaddclass = 'js-confirm::btn-info|js-confirm::icon-pencil|js-cancel::btn-success|js-cancel::icon-check|js-icon::text-primary|js-icon::icon-info';
+            thisClass.setProperties(defaultaddclass, 'saddclass');
         };
 
         this.setDelete = function () {
             defaultaddhtml = 'js-confirm::Apagar|js-cancel::Cancelar';
-            thisClass.setProperties(defaultaddhtml, 'addhtml');
+            thisClass.setProperties(defaultaddhtml, 'saddhtml');
 
-            defaultaddclass = 'js-confirm::btn-red|js-confirm::icon-trash|js-cancel::btn-default|js-cancel::icon-ban|js-icon::color-yellow|js-icon::icon-warning';
-            thisClass.setProperties(defaultaddclass, 'addclass');
+            defaultaddclass = 'js-confirm::btn-red|js-confirm::icon-trash|js-cancel::btn-default|js-cancel::icon-ban|js-icon::text-warning|js-icon::icon-warning';
+            thisClass.setProperties(defaultaddclass, 'saddclass');
         };
 
         this.setProperties = function (s, f) {
@@ -163,32 +185,32 @@
                 elementObj = thisClass.objSplit(obj[1]);
 
                 switch (f) {
-                    case "adddata":
-                        thisClass.adddata(element, elementObj);
+                    case "sadddata":
+                        thisClass.sadddata(element, elementObj);
                         break;
-                    case "removedata":
-                        thisClass.removedata(element, elementObj);
+                    case "sremovedata":
+                        thisClass.sremovedata(element, elementObj);
                         break;
-                    case "addclass":
-                        thisClass.addclass(element, elementObj);
+                    case "saddclass":
+                        thisClass.saddclass(element, elementObj);
                         break;
-                    case "removeclass":
-                        thisClass.removeclass(element, elementObj);
+                    case "sremoveclass":
+                        thisClass.sremoveclass(element, elementObj);
                         break;
-                    case "addattr":
-                        thisClass.addattr(element, elementObj);
+                    case "saddattr":
+                        thisClass.saddattr(element, elementObj);
                         break;
-                    case "removeattr":
-                        thisClass.removeattr(element, elementObj);
+                    case "sremoveattr":
+                        thisClass.sremoveattr(element, elementObj);
                         break;
-                    case "removeelement":
-                        thisClass.removeelement(element, elementObj);
+                    case "sremoveelement":
+                        thisClass.sremoveelement(element, elementObj);
                         break;
-                    case "addhtml":
-                        thisClass.addhtml(element, elementObj);
+                    case "saddhtml":
+                        thisClass.saddhtml(element, elementObj);
                         break;
-                    case "addcss":
-                        thisClass.addcss(element, elementObj);
+                    case "saddcss":
+                        thisClass.saddcss(element, elementObj);
                         break;
                 }
             });
@@ -217,32 +239,44 @@
 
         this.show = function () {
 
-            objmodalname = $('.' + modalname[0]['name']);
+            $("html").css("overflow-y", "hidden");
 
+            objmodalname = $('.' + smodalname[0]['name']);
             box = objmodalname.children();
+            objmodalname.css("overflow-y", "auto");
+            objmodalname.css("display", "flex");
+            objmodalname.fadeIn(effecttime, function () {
+                box.css('width', settings.smodalwidth);
+                if (settings.smodaleffect) {
+                    box.show(settings.smodaleffect, [], 300);
+                } else {
+                    box.css('display', 'block');
+                    box.css('width', '150px');
+                    box.animate({"width": settings.smodalwidth}, effecttime);
+                    box.animate({"width": settings.smodalwidth}, effecttime - 100);
+                }
 
-            objmodalname.fadeIn(effecttime).css("display", "flex");
-
-            box.css('width', '0');
-            box.animate({"width": (settings.modalwidth + 20) + "px"}, effecttime);
-            box.animate({"width": (settings.modalwidth) + "px"}, effecttime - 150);
+            });
         };
 
         this.close = function () {
-            $("[s-modalclose]").click(function (e) {
+            $("[smodalclose]").click(function (e) {
                 if (e.target === this) {
 
-                    objmodalname = $('.' + modalname[0]['name']);
+                    $("html").css("overflow-y", "auto");
+
+                    objmodalname = $('.' + smodalname[0]['name']);
+                    objmodalname.css("overflow-y", "hidden");
                     box = objmodalname.children();
+
                     box.animate({"width": "250px"}, effecttime);
                     objmodalname.fadeOut(effecttime, function () {
-
-                        if (box.length === 1 && (modalname[0]['name'] === 'app_modal_dialog' || options.modalhtml)) {
+                        if (box.length === 1 && (smodalname[0]['name'] === 'app_modal_dialog' || options.smodalhtml)) {
                             objmodalname.remove();
-                            modalname.splice(0, 1);
+                            smodalname.splice(0, 1);
                         }
+                        box.css("display", "none");
                     });
-
                 }
             });
         };
@@ -250,49 +284,47 @@
 
         return this.each(function () {
 
-            if (settings.modalname === 'app_modal_dialog' || options.modalhtml) {
-                $('body').prepend(defaulthtml);
-            }
+            $('body').prepend(defaulthtml);
 
-            if (settings.modaltype) {
-                if (settings.modaltype === 'info') {
+            if (settings.smodaltype) {
+                if (settings.smodaltype === 'info') {
                     thisClass.setInfo();
                 }
 
-                if (settings.modaltype === 'delete' || settings.modaltype === 'delete_photo') {
+                if (settings.smodaltype === 'delete' || settings.smodaltype === 'delete_photo') {
                     thisClass.setDelete();
                 }
             }
 
             if (settings.saddhtml) {
-                thisClass.setProperties(settings.saddhtml, 'addhtml');
+                thisClass.setProperties(settings.saddhtml, 'saddhtml');
             }
             if (settings.sadddata) {
-                thisClass.setProperties(settings.sadddata, 'adddata');
+                thisClass.setProperties(settings.sadddata, 'sadddata');
             }
             if (settings.sremovedata) {
-                thisClass.setProperties(settings.sremovedata, 'removedata');
+                thisClass.setProperties(settings.sremovedata, 'sremovedata');
             }
             if (settings.saddattr) {
-                thisClass.setProperties(settings.saddattr, 'addattr');
+                thisClass.setProperties(settings.saddattr, 'saddattr');
             }
             if (settings.sremoveattr) {
-                thisClass.setProperties(settings.sremoveattr, 'removeattr');
+                thisClass.setProperties(settings.sremoveattr, 'sremoveattr');
             }
             if (settings.saddclass) {
-                thisClass.setProperties(settings.saddclass, 'addclass');
+                thisClass.setProperties(settings.saddclass, 'saddclass');
             }
             if (settings.sremoveclass) {
-                thisClass.setProperties(settings.sremoveclass, 'removeclass');
+                thisClass.setProperties(settings.sremoveclass, 'sremoveclass');
             }
             if (settings.sremoveelement) {
-                thisClass.setProperties(settings.sremoveelement, 'removeelement');
+                thisClass.setProperties(settings.sremoveelement, 'sremoveelement');
             }
             if (settings.saddcss) {
-                thisClass.setProperties(settings.saddcss, 'addcss');
+                thisClass.setProperties(settings.saddcss, 'saddcss');
             }
-            if (settings.modaldata) {
-                thisClass.adddata($('.' + settings.modaldatainsert), settings.modaldata);
+            if (settings.smodaldata) {
+                thisClass.sadddata($('.' + settings.smodaldata), thisClass.data());
             }
 
             thisClass.show();
