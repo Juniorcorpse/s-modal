@@ -87,3 +87,54 @@ Monitoramento do callback
 if (response.smodal) {
     $(this).smodal(response.smodal);
 }
+
+```
+##### Helper para Montar as Opções do botão
+
+```
+/**
+ * @param array $options
+ * @return string
+ */
+function smodal(array $options): string
+{
+    $result = "";
+    foreach ($options as $key => $value) {
+        if(!is_array($value)) {
+            $result .= "{$key}='{$value}' ";
+        } else {
+            $result .= "{$key}='";
+            foreach ($value as $subkey => $subvalue) {
+                if(!is_array($subvalue)) {
+                    $result .= "{$subkey}::{$subvalue}|";
+                 } else {
+                    foreach ($subvalue as $ssbkey => $ssvalue) {
+                        $result .= "{$subkey}::{$ssbkey}=={$ssvalue}|";
+                    }
+                }
+            }
+            $result = substr($result, 0, -1);
+            $result .= "' ";
+        }
+    }
+    return $result;
+}
+
+```
+##### Exemplo de Utilização do helper
+
+```
+$smodal_delete = smodal([
+        "smodalname" => "app_modal_dialog",
+        "smodaltype" => "delete",
+        "sadddata" => [
+            "js-confirm" => ["post", url("/" . CONF_VIEW_APP . "/registration/departament")]],
+            "saddhtml" => [
+            "js-title" => "<b>Atenção:</b> Tem certeza que deseja excluir esse departamento! Essa Ação não pode ser desfeita!"
+            ]
+        ]);
+        
+<a class="icon-trash-o btn btn-small btn-red" href="#" title="Deletar Departamento?"
+        <?= $smodal_delete;?>
+        data-action="delete"
+        data-id="<?= $departament->id; ?>">Deletar</a>
