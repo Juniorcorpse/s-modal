@@ -1,7 +1,6 @@
 # Plugin jQuery s-modal
 *Author: Robson Suzin*
 Using jQuery
-CSS: Bootstrap
 
 
 ```
