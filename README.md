@@ -8,9 +8,13 @@ Você pode passar no construtor um nome para a classe da modal ou vai atribuir a
 $modal = new \Source\Support\Smodal();
 
 $modal->setSmodalname("modal_name_class") // Padrão app_modal_dialog ou vc pode passar uma classe para a modal 
+
 $modal->setSmodaltype("delete") = Ex.: info delete delete_photo ( Atribui os estilos padrões da modal )
+
 $modal->setSmodalhtml("<p>Modal</p>") = Ex.: Conteúdo HTML da Modal
+
 $modal->setSmodalwidth(700) = Qual será o tamanho da modal - Padrão 500px - Ex: 90%
+
 $modal->setSmodalprint('true') = true (Adiciona um botão de print)
 
 $modal->setSmodaleffect('bounce') = Qual efeito que vai aparecer a modal, jqueryUi
