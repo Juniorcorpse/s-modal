@@ -218,9 +218,9 @@ class Smodal
     /**
      * @param mixed $saddcss
      */
-    public function setSaddcss(string $element, string $class): void
+    public function setSaddcss(string $element, string $css, string $value): void
     {
-        $this->saddcss[$element] = [$class];
+        $this->saddcss[] = [$element => [$css => $value]];
 
     }
 
