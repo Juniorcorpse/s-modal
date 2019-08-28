@@ -1,6 +1,6 @@
 # Plugin jQuery s-modal
 *Author: Robson Suzin*
-Using jQuery
+Using jQuery and PHP
 
 
 ```
