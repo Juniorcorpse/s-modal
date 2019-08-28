@@ -4,59 +4,60 @@ Using jQuery
 
 
 ```
-Dados para serem enviados no objeto:
+Você pode passar no construtor um nome para a classe da modal ou vai atribuir a classe padrão
+$modal = new \Source\Support\Smodal();
 
-smodalname = app_modal_dialog (Abre uma modal dialog) | Outro nome adiciona conteudo html
-smodaltype = Ex.: info delete delete_photo ( Atribui os estilos padrões da modal )
-smodalhtml = Ex.: Conteúdo HTML da Modal
-smodalwidth = Qual será o tamanho da modal - Padrão 500px - Ex: 90%
-smodalprint = true (Adiciona um botão de print)
+$modal->setSmodalname("modal_name_class") // Padrão app_modal_dialog ou vc pode passar uma classe para a modal 
+$modal->setSmodaltype("delete") = Ex.: info delete delete_photo ( Atribui os estilos padrões da modal )
+$modal->setSmodalhtml("<p>Modal</p>") = Ex.: Conteúdo HTML da Modal
+$modal->setSmodalwidth(700) = Qual será o tamanho da modal - Padrão 500px - Ex: 90%
+$modal->setSmodalprint('true') = true (Adiciona um botão de print)
 
-smodaleffect = Qual efeito que vai aparecer a modal, jqueryUi
+$modal->setSmodaleffect('bounce') = Qual efeito que vai aparecer a modal, jqueryUi
 
-smodaldata = Qual objeto vai receber os data() do evento
+$modal->setSmodaldata('js-confirm') = Qual elemento vai receber os data() do evento
 
-sadddata = Adiciona Data 
-Ex.: elemento::data==valor|elemento::data==valor
+$modal->setSadddata($element, $data, $value) = Adiciona Atributo Data ao $element 
 
-sremovedata = Remover Data 
-Ex.: elemento::data|elemento::data
+$modal->setSremovedata($element, $data) = Remover Atributo Data do $element 
 
-saddattr = Adiciona Atributos
-Ex.: elemento::attr==valor|elemento::attr==valor
+$modal->setSaddattr($element, $attr, $value) = Adiciona Atributos ao $element
 
-sremoveattr = Remover Atributos 
-Ex.: elemento::attr==valor|elemento::attr==valor
+$modal->setSremoveattr($element, $attr) = Remover Atributos do $element
 
-saddhtml = Adiciona Html 
-Ex.: elemento::valor|elemento::valor
+$modal->setSaddhtml($element, $value) = Adiciona Html ao $element
+$modal->setSaddhtml($element, $value) = Repetir fará uma nova iteração ao $element
 
-saddclass = Adicionar Class 
-Ex.: elemento::class|elemento::class
+$modal->setSaddclass($element, $class) = Adicionar Classe ao $element
 
-sremoveclass = Remove Class
-Ex.: elemento::class|elemento::class
+$modal->setSremoveclass($element, $class) = Remove Classe do $element
 
-sremoveelement = Remove Class 
-Ex.: elemento|elemento
+$modal->setSremoveelement($element) = Remove o $element
+$modal->setSremoveelement($element) = Remove o segundo $element
+$modal->setSremoveelement($element) = Remove o terceiro $element
 
-saddcss = Adiciona um css ao elemento
-Ex.: elemento::css==valor
+$modal->setSaddcss($element, $css, $value) = Adiciona css ao $elemento
+$modal->setSaddcss($element, $css, $value) = Adiciona css ao segundo $elemento
 
 ```
-#### Exemplos de utilização 
-##### Abrindo uma modal pela ação de um botão
+#### Exemplos de utilização modal dialog para exclusão
+##### Abrindo uma modal pela ação de um botão utilizando a classe Smodal
 
 ```
 Botão que vai receber o click
 
-<a class="icon-trash-o btn btn-danger" href="#" title="Deletar?"
-smodalname="app_modal_dialog"
-smodaltype="delete"
-smodaldata="js-confirm"
-saddhtml="js-title::Atenção: Tem certeza que deseja excluir esse departamento! Essa Ação não pode ser desfeita!"
-data-id="conteudo"
->Deletar</a>
+$modal_delete = new \Source\Support\Smodal();
+$modal_delete->setSmodaltype("delete");
+$modal_delete->setSadddata("js-confirm", "post", url("/" . CONF_VIEW_APP . "/registration/departament"));
+$modal_delete->setSaddhtml(
+        "js-title",
+        "<b>Atenção:</b> Tem certeza que deseja excluir esse departamento! Essa Ação não pode ser desfeita!"
+);
+
+<a class="icon-trash-o btn btn-small btn-red" href="#" title="Deletar Departamento?"
+    <?= $modal_delete->renderString(); ?>
+    data-action="delete"
+    data-id="<?= $departament->id; ?>">Deletar</a>
 
 Script que monitora o botão:
 
@@ -71,69 +72,20 @@ $(document).on('click', "[smodalname]", function (e) {
 ```
 Objeto para ser enviado ao callback
 
-$data = new \stdClass();
-$data->smodaltype = "info";
-$data->saddhtml = 'class::conteudo';
-$data->saddclass = 'class::conteudo|class::conteudo';
-$data->saddattr = 'class::atributo==conteudo';
-$data->sremovedata = 'class::data';
+$smodal = new Smodal('app_modal_departament_address');
+        $smodal->setSmodalwidth(700);
+        $smodal->setSmodaleffect("bounce");
+        $smodal->setSmodalhtml(
+            $this->view->render("widgets/registration/views/modal_vehicle", [
+                "title" => $title,
+                "vehicle" => $vehicleEdit,
+                "departaments" => $departaments->order('name')->fetch(true)
+            ]));
 
-$json["smodal"] = $data;
-echo json_encode($json);
+        $json["smodal"] = $smodal->renderObject();
 
 Monitoramento do callback
 
 if (response.smodal) {
     $(this).smodal(response.smodal);
 }
-
-```
-##### Helper para Montar as Opções do botão
-
-```
-/**
- * @param array $options
- * @return string
- */
-function smodal(array $options): string
-{
-    $result = "";
-    foreach ($options as $key => $value) {
-        if(!is_array($value)) {
-            $result .= "{$key}='{$value}' ";
-        } else {
-            $result .= "{$key}='";
-            foreach ($value as $subkey => $subvalue) {
-                if(!is_array($subvalue)) {
-                    $result .= "{$subkey}::{$subvalue}|";
-                 } else {
-                    foreach ($subvalue as $ssbkey => $ssvalue) {
-                        $result .= "{$subkey}::{$ssbkey}=={$ssvalue}|";
-                    }
-                }
-            }
-            $result = substr($result, 0, -1);
-            $result .= "' ";
-        }
-    }
-    return $result;
-}
-
-```
-##### Exemplo de Utilização do helper
-
-```
-$smodal_delete = smodal([
-        "smodalname" => "app_modal_dialog",
-        "smodaltype" => "delete",
-        "sadddata" => [
-            "js-confirm" => ["post", url("/" . CONF_VIEW_APP . "/registration/departament")]],
-            "saddhtml" => [
-            "js-title" => "<b>Atenção:</b> Tem certeza que deseja excluir esse departamento! Essa Ação não pode ser desfeita!"
-            ]
-        ]);
-        
-<a class="icon-trash-o btn btn-small btn-red" href="#" title="Deletar Departamento?"
-        <?= $smodal_delete;?>
-        data-action="delete"
-        data-id="<?= $departament->id; ?>">Deletar</a>
